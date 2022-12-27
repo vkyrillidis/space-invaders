@@ -59,7 +59,7 @@ player.setheading(90)
 playerspeed = 15
 
 # Choose number of enemies
-number_of_enemies = 5
+number_of_enemies = 4
 
 # Create an empty list of enemies
 enemiesList = []
