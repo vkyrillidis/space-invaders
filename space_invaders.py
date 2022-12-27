@@ -36,15 +36,24 @@ border_pen.hideturtle()
 # Set the score to 0
 score = 100
 
-# Draw the score on stage
+# Score pen draws the score on stage
 score_pen = turtle.Turtle()
 score_pen.speed(0)
 score_pen.color("white")
 score_pen.penup()
 score_pen.setposition(-290, 280)
-scorestring = "Score: %s" % score
-score_pen.write(scorestring, False, align="left", font=("Arial", 14, "bold"))
-score_pen.hideturtle()
+
+
+def update_score():
+    score_pen.clear()
+    scorestring = "Score: %s" % score
+    score_pen.write(scorestring, False, align="left", font=("Arial", 14, "bold"))
+    score_pen.hideturtle()
+
+
+# Draw the score initially
+update_score()
+
 
 # Create the player turtle
 player = turtle.Turtle()
@@ -120,8 +129,8 @@ def move_right():
 
 
 def fire_bullet():
-    # Declare bulletstate as a global if it needs change
-    global bulletstate
+    # Declare bulletstate and score as a global if it needs change
+    global bulletstate, score
     if bulletstate == "ready":
         # os.system("afplay laser.wav&")
         # for linux use os.system("aplay laser.wav&")
@@ -132,6 +141,9 @@ def fire_bullet():
         bullet.setposition(x, y)
         bullet.showturtle()
         bulletstate = "fire"
+        # For each bullet fired, score -= 1
+        score -= 1
+        update_score()
 
 
 def isCollision(t1, t2):
@@ -184,9 +196,7 @@ while True:
             enemy.setposition(x, y)
             # Update the score
             score += 10
-            scorestring = "Score: %s" % score
-            score_pen.clear()
-            score_pen.write(scorestring, False, align="left", font=("Arial", 14, "bold"))
+            update_score()
 
         # Check for collision between enemy and player
         if isCollision(player, enemy):
