@@ -17,6 +17,7 @@ win.bgpic("space_invaders_background.gif")
 
 # Register the graphics for the game
 turtle.register_shape("invader.gif")
+turtle.register_shape("red_invader.gif")
 turtle.register_shape("player.gif")
 
 # Draw border
@@ -53,7 +54,6 @@ def update_score():
 # Draw the score initially
 update_score()
 
-
 # Create the player turtle
 player = turtle.Turtle()
 player.color("blue")
@@ -71,21 +71,23 @@ number_of_enemies = 4
 # Create an empty list of enemies
 enemiesList = []
 
+
 # Add enemies to the list
 # We need to create more turtle objects
+def create_new_enemy(color) -> turtle.Turtle():
+    new_enemy = turtle.Turtle()
+    new_enemy.shape("red_invader.gif" if color == "red" else "invader.gif")
+    new_enemy.speed(random.randint(1, 3))
+    new_enemy.penup()
+    x = random.randint(-200, 200)
+    y = random.randint(100, 200)
+    new_enemy.setposition(x, y)
+    return new_enemy
+
 
 for i in range(number_of_enemies):
     # Create the enemy
-    enemiesList.append(turtle.Turtle())
-
-for enemy in enemiesList:
-    enemy.color("red")
-    enemy.shape("invader.gif")
-    enemy.speed(random.randint(1, 3))
-    enemy.penup()
-    x = random.randint(-200, 200)
-    y = random.randint(100, 200)
-    enemy.setposition(x, y)
+    enemiesList.append(create_new_enemy("green"))
 
 # 1 means going to the right, -1 going to the left
 direction = 1
@@ -191,13 +193,23 @@ while True:
             bullet.hideturtle()
             bulletstate = "ready"
             bullet.setposition(0, -400)
-            # Reset the enemy
-            x = random.randint(-200, 200)
-            y = random.randint(100, 200)
-            enemy.setposition(x, y)
-            # Update the score
-            score += 10
-            update_score()
+
+            if enemy.shape() == "invader.gif":
+                # Green alien was hit, remove, create 2 red aliens and get 10 points
+                enemiesList.remove(enemy)
+                enemy.hideturtle()
+                enemiesList.append(create_new_enemy("red"))
+                enemiesList.append(create_new_enemy("red"))
+                # Update the score
+                score += 10
+                update_score()
+                continue
+            else:
+                # Red alien was hit, remove and get 20 points
+                enemy.hideturtle()
+                enemiesList.remove(enemy)
+                score += 20
+                update_score()
 
         # Check for collision between enemy and player
         if isCollision(player, enemy):
