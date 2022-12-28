@@ -42,12 +42,28 @@ score_pen.color("white")
 score_pen.penup()
 score_pen.setposition(-290, 280)
 
+# Middle of the screen message pen
+middle_of_screen_pen = turtle.Turtle()
+middle_of_screen_pen.speed(0)
+middle_of_screen_pen.color("white")
+middle_of_screen_pen.penup()
+# Set position to middle of the screen
+middle_of_screen_pen.setposition(0, 0)
+
 
 def update_score():
     score_pen.clear()
     scorestring = "Score: %s" % score
     score_pen.write(scorestring, False, align="left", font=("Arial", 14, "bold"))
     score_pen.hideturtle()
+
+
+def end_game_with_message(message):
+    middle_of_screen_pen.clear()
+    message = message.upper()
+    middle_of_screen_pen.write(message, False, align="center", font=("Arial", 14, "bold"))
+    middle_of_screen_pen.hideturtle()
+    win.exitonclick()
 
 
 # Draw the score initially
@@ -147,12 +163,6 @@ def fire_bullet():
         update_score()
 
 
-def end_game():
-    print("Quiting game!")
-    global running
-    running = False
-
-
 def isCollision(t1, t2):
     distance = math.sqrt(math.pow(t1.xcor() - t2.xcor(), 2) + math.pow(t1.ycor() - t2.ycor(), 2))
     if distance < 15:
@@ -166,12 +176,14 @@ turtle.listen()
 turtle.onkey(move_left, "Left")
 turtle.onkey(move_right, "Right")
 turtle.onkey(fire_bullet, "space")
-turtle.onkey(end_game, "q")
-
-running = True
+# turtle.onkey(end_game_with_message("Quiting the game!!!"), "q")
 
 # Main game loop
-while running:
+while True:
+    if len(enemiesList) == 0:
+        # Print game over
+        end_game_with_message("You win!!!")
+
     for enemy in enemiesList:
         # This is a forever loop
         # Move the enemy
@@ -227,6 +239,7 @@ while running:
             player.hideturtle()
             enemy.hideturtle()
             print("GAME OVER")
+            end_game_with_message("You lose!!!")
             break
 
     # Move the bullet only when bulletstate is "fire"
