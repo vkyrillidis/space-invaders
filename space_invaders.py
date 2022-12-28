@@ -5,7 +5,6 @@
 # http://christianthompson.com/
 
 import turtle
-import os
 import math
 import random
 import winsound
@@ -82,13 +81,14 @@ for i in range(number_of_enemies):
 for enemy in enemiesList:
     enemy.color("red")
     enemy.shape("invader.gif")
-    enemy.speed(0)
+    enemy.speed(random.randint(1, 3))
     enemy.penup()
     x = random.randint(-200, 200)
     y = random.randint(100, 200)
     enemy.setposition(x, y)
 
-enemyspeed = 2
+# 1 means going to the right, -1 going to the left
+direction = 1
 
 # Create the player's bullet
 bullet = turtle.Turtle()
@@ -165,18 +165,19 @@ while True:
     for enemy in enemiesList:
         # This is a forever loop
         # Move the enemy
+        enemy_speed = enemy.speed() * direction
         x = enemy.xcor()
-        x = x + enemyspeed
+        x = x + enemy_speed
         enemy.setx(x)
 
         # Move enemy back and down
         if enemy.xcor() > 280:
-            enemyspeed = enemyspeed * -1
+            direction = direction * -1
             y = enemy.ycor()
             y = y - 40
             enemy.sety(y)
         if enemy.xcor() < -280:
-            enemyspeed = enemyspeed * -1
+            direction = direction * -1
             y = enemy.ycor()
             y = y - 40
             enemy.sety(y)
