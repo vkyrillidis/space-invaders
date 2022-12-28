@@ -3,7 +3,6 @@
 # Thanks to Christian Thompson
 # Python Game Programming Tutorial: Space Invaders
 # http://christianthompson.com/
-
 import turtle
 import math
 import random
@@ -148,6 +147,12 @@ def fire_bullet():
         update_score()
 
 
+def end_game():
+    print("Quiting game!")
+    global running
+    running = False
+
+
 def isCollision(t1, t2):
     distance = math.sqrt(math.pow(t1.xcor() - t2.xcor(), 2) + math.pow(t1.ycor() - t2.ycor(), 2))
     if distance < 15:
@@ -161,9 +166,12 @@ turtle.listen()
 turtle.onkey(move_left, "Left")
 turtle.onkey(move_right, "Right")
 turtle.onkey(fire_bullet, "space")
+turtle.onkey(end_game, "q")
+
+running = True
 
 # Main game loop
-while True:
+while running:
     for enemy in enemiesList:
         # This is a forever loop
         # Move the enemy
