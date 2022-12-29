@@ -54,7 +54,7 @@ middle_of_screen_pen.setposition(0, 0)
 
 def update_score():
     score_pen.clear()
-    scorestring = "Score: %s" % score
+    scorestring = f"Score: {score}"
     score_pen.write(scorestring, False, align="left", font=("Arial", 14, "bold"))
     score_pen.hideturtle()
 
