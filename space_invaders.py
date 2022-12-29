@@ -13,6 +13,7 @@ win = turtle.Screen()
 win.bgcolor("black")
 win.title("Space Invaders")
 win.bgpic("space_invaders_background.gif")
+win.tracer(0)
 
 # Register the graphics for the game
 turtle.register_shape("invader.gif")
@@ -73,12 +74,10 @@ update_score()
 player = turtle.Turtle()
 player.color("blue")
 player.shape("player.gif")
-player.speed(0)
 player.penup()
 player.setposition(0, -250)
 player.setheading(90)
-
-playerspeed = 15
+player.speed = 15
 
 # Choose number of enemies
 number_of_enemies = 4
@@ -92,7 +91,8 @@ enemiesList = []
 def create_new_enemy(color) -> turtle.Turtle():
     new_enemy = turtle.Turtle()
     new_enemy.shape("red_invader.gif" if color == "red" else "invader.gif")
-    new_enemy.speed(random.randint(1, 3))
+    random_speed = max(random.randint(1, 3) * 0.1, 0.1)
+    new_enemy.speed = random_speed
     new_enemy.penup()
     x = random.randint(-200, 200)
     y = random.randint(100, 200)
@@ -116,8 +116,9 @@ bullet.penup()
 bullet.setheading(90)
 bullet.shapesize(0.5, 0.5)
 bullet.hideturtle()
+bullet.setposition(0, -400)
 
-bulletspeed = 20
+bulletspeed = 1
 
 # Define bullet state
 # we have 2 states:
@@ -131,7 +132,7 @@ bulletstate = "ready"
 
 def move_left():
     x = player.xcor()
-    x = x - playerspeed
+    x = x - player.speed
     if x < -280:
         x = -280
     player.setx(x)
@@ -139,7 +140,7 @@ def move_left():
 
 def move_right():
     x = player.xcor()
-    x = x + playerspeed
+    x = x + player.speed
     if x > 280:
         x = 280
     player.setx(x)
@@ -176,33 +177,41 @@ turtle.listen()
 turtle.onkey(move_left, "Left")
 turtle.onkey(move_right, "Right")
 turtle.onkey(fire_bullet, "space")
-# turtle.onkey(end_game_with_message("Quiting the game!!!"), "q")
+
+
+# Moves all enemies down 40 pixels
+def move_enemies_down():
+    for e in enemiesList:
+        e.sety(e.ycor() - 40)
+
 
 # Main game loop
 while True:
+    win.update()
+
+    # Check if all enemies are destroyed
     if len(enemiesList) == 0:
         # Print game over
         end_game_with_message("You win!!!")
 
+    # Check if enemies have reached the bottom of the screen
+    for en in enemiesList:
+        if en.ycor() < -250:
+            print("GAME OVER")
+            end_game_with_message("You lose!!!")
+
     for enemy in enemiesList:
         # This is a forever loop
         # Move the enemy
-        enemy_speed = enemy.speed() * direction
+        enemy_speed = enemy.speed * direction
         x = enemy.xcor()
         x = x + enemy_speed
         enemy.setx(x)
 
-        # Move enemy back and down
-        if enemy.xcor() > 280:
+        # Move all enemies back and down and change their direction
+        if enemy.xcor() > 280 or enemy.xcor() < -280:
             direction = direction * -1
-            y = enemy.ycor()
-            y = y - 40
-            enemy.sety(y)
-        if enemy.xcor() < -280:
-            direction = direction * -1
-            y = enemy.ycor()
-            y = y - 40
-            enemy.sety(y)
+            move_enemies_down()
 
         # Check for collision between bullet and enemy
         if isCollision(bullet, enemy):
